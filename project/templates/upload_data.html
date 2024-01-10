@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload User Data{% endblock %}
+
+{% block content %}
+	<div class="main-container">
+		<div class="pd-ltr-20">
+			<div class="container-fluid justify-content-between align-items-center">
+				<div >
+					<h2>Upload Data</h2>
+                    <br/>
+					<form method="post" action="{% url 'upload_data' %}" enctype="multipart/form-data">
+					    {% csrf_token %}
+                        <label for="Upload">Select the file to be Uploaded</label>
+                        <select name="Upload" id="Upload">
+                            <option value="Employee Data">Employee Data</option>
+                            <option value="Department Data">Department Data</option>
+                        </select>
+                        <br/>
+                        <input type="file" id="upload_file" name="upload_file">
+                        <br/>
+                        <br/>
+					    <button type="submit">Upload</button>
+					</form>      
+				</div>
+				<br/>
+				<div class="card-box mb-30 ">
+					<h2 class="h4 pd-20">Best Selling Products</h2>
+					<table class="table nowrap">
+						<thead>
+							<tr>
+								<th scope="col">Department</th>
+								<th scope="col">Number of Employees</th>
+							</tr>
+						</thead>
+						<tbody id="dataRows">
+						</tbody>
+					</table>
+				</div>
+			</div> 
+		</div>
+		<h1>CustomUser List</h1>
+		<ul id="userList"></ul>	
+	</div>
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			const userListElement = document.getElementById('userList');
+		
+			// Fetch data from the API endpoint
+			fetch('http://localhost:8000/employee_count/')
+				.then(response => response.json())
+				.then(data => {
+					// Update the HTML with the received data
+					const dataRows = $('#dataRows');
+		
+					// Generate dynamic headers based on the data
+					data.forEach((user, index) => {
+						// Create a new <th> element for each department
+						const departmentNameTh = $(`<th scope="row" id="departmentName${index + 1}">${user.department__name}</th>`);
+						const userCountTh = $(`<th scope="row" id="userCount${index + 1}">${user.user_count}</th>`);		
+						// Create a new <tr> element for each data row
+						const dataRow = $('<tr></tr>');		
+						// Create a new <td> element for department name
+						const departmentNameTd = $(`<th>${user.department__name}</th>`);
+						dataRow.append(departmentNameTd);		
+						// Create a new <td> element for user count
+						const userCountTd = $(`<th>${user.user_count}</th>`);
+						dataRow.append(userCountTd);		
+						// Append the new <tr> element to the data rows
+						dataRows.append(dataRow);
+					});
+				})
+				.catch(error => {
+					console.error('Error fetching data:', error);
+				});
+		});
+	</script>
+{% endblock %}

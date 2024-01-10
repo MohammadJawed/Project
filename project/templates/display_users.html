@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload Files Page{% endblock %}
+
+{% block content %}
+    {% load static %}
+    <div class="main-container">
+        <div class="pd-ltr-20">
+            <div class="card-box mb-30 ">
+                <h2 class="h4 pd-20">User List</h2>
+                <table class="table nowrap">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">First Name</th>
+                            <th scope="col">Last Name</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataRows">
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script>
+		document.addEventListener('DOMContentLoaded', function () {
+			const userListElement = document.getElementById('userList');
+		
+			// Fetch data from the API endpoint
+			fetch('http://localhost:8000/display_users/')
+				.then(response => response.json())
+				.then(data => {
+					// Update the HTML with the received data
+					const dataRows = $('#dataRows');
+		
+					// Generate dynamic headers based on the data
+					data.forEach((user, index) => {
+						// Create a new <th> element for each department
+						const userIdTh = $(`<th scope="row" id="userId${index + 1}">${user.id}</th>`);
+						const userEmailTh = $(`<th scope="row" id="userEmail${index + 1}">${user.email}</th>`);		
+						const userFirstNameTh = $(`<th scope="row" id="userFirstName${index + 1}">${user.first_name}</th>`);		
+						const userLastNameTh = $(`<th scope="row" id="userLastName${index + 1}">${user.last_name}</th>`);		
+						const dataRow = $('<tr></tr>');		
+						const userIdTd = $(`<th>${user.id}</th>`);
+						dataRow.append(userIdTd);		
+						const userEmailTd = $(`<th>${user.email}</th>`);
+						dataRow.append(userEmailTd);	
+                        const userFirstNameTd = $(`<th>${user.first_name}</th>`);
+						dataRow.append(userFirstNameTd);
+                        const userLastNameTd = $(`<th>${user.last_name}</th>`);
+						dataRow.append(userLastNameTd);	
+						dataRows.append(dataRow);
+					});
+				})
+				.catch(error => {
+					console.error('Error fetching data:', error);
+				});
+		});
+	</script>
+{% endblock %}
